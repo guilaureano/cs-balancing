@@ -7,16 +7,36 @@
 function customerSuccessBalancing(
   customerSuccess,
   customers,
-  customerSuccessAway
+  customerSuccessAway,
 ) {
-  /**
-   * ===============================================
-   * =========== Write your solution here ==========
-   * ===============================================
-   */
+  const csAvailable = customerSuccess.filter(
+    cs => !customerSuccessAway.some(id => id === cs.id),
+  );
+
+  csAvailable.sort((a, b) => a.score - b.score);
+
+  customers.forEach(customer => {
+    for (let i = 0; i < csAvailable.length; i++) {
+      csAvailable[i].totalClients = csAvailable[i].totalClients
+        ? csAvailable[i].totalClients
+        : 0;
+
+      if (customer.score <= csAvailable[i].score) {
+        csAvailable[i].totalClients++;
+        break;
+      }
+    }
+  });
+
+  csAvailable.sort((a, b) => b.totalClients - a.totalClients);
+
+  if (csAvailable[0].totalClients === csAvailable[1].totalClients) {
+    return 0;
+  }
+  return csAvailable[0].id;
 }
 
-test("Scenario 1", () => {
+test('Scenario 1', () => {
   const css = [
     { id: 1, score: 60 },
     { id: 2, score: 20 },
@@ -51,11 +71,11 @@ function mapEntities(arr) {
   }));
 }
 
-function arraySeq(count, startAt){
+function arraySeq(count, startAt) {
   return Array.apply(0, Array(count)).map((it, index) => index + startAt);
 }
 
-test("Scenario 2", () => {
+test('Scenario 2', () => {
   const css = mapEntities([11, 21, 31, 3, 4, 5]);
   const customers = mapEntities([10, 10, 10, 20, 20, 30, 30, 30, 20, 60]);
   const csAway = [];
@@ -63,7 +83,7 @@ test("Scenario 2", () => {
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(0);
 });
 
-test("Scenario 3", () => {
+test('Scenario 3', () => {
   const testTimeoutInMs = 100;
   const testStartTime = new Date().getTime();
 
@@ -78,7 +98,7 @@ test("Scenario 3", () => {
   }
 });
 
-test("Scenario 4", () => {
+test('Scenario 4', () => {
   const css = mapEntities([1, 2, 3, 4, 5, 6]);
   const customers = mapEntities([10, 10, 10, 20, 20, 30, 30, 30, 20, 60]);
   const csAway = [];
@@ -86,7 +106,7 @@ test("Scenario 4", () => {
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(0);
 });
 
-test("Scenario 5", () => {
+test('Scenario 5', () => {
   const css = mapEntities([100, 2, 3, 6, 4, 5]);
   const customers = mapEntities([10, 10, 10, 20, 20, 30, 30, 30, 20, 60]);
   const csAway = [];
@@ -94,7 +114,7 @@ test("Scenario 5", () => {
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(1);
 });
 
-test("Scenario 6", () => {
+test('Scenario 6', () => {
   const css = mapEntities([100, 99, 88, 3, 4, 5]);
   const customers = mapEntities([10, 10, 10, 20, 20, 30, 30, 30, 20, 60]);
   const csAway = [1, 3, 2];
@@ -102,7 +122,7 @@ test("Scenario 6", () => {
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(0);
 });
 
-test("Scenario 7", () => {
+test('Scenario 7', () => {
   const css = mapEntities([100, 99, 88, 3, 4, 5]);
   const customers = mapEntities([10, 10, 10, 20, 20, 30, 30, 30, 20, 60]);
   const csAway = [4, 5, 6];
@@ -110,7 +130,7 @@ test("Scenario 7", () => {
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(3);
 });
 
-test("Scenario 8", () => {
+test('Scenario 8', () => {
   const css = mapEntities([60, 40, 95, 75]);
   const customers = mapEntities([90, 70, 20, 40, 60, 10]);
   const csAway = [2, 4];
